@@ -1,10 +1,11 @@
 from flask import Flask, request
 from flask_cors import CORS
-from train import train_model
+from train import training
 
 app = Flask(__name__)
 CORS(app)
 count=0
+var=training()
 
 @app.route('/upload', methods=['POST'])
 def receive_image():
@@ -23,7 +24,7 @@ def receive_image():
     count=count+1
     if count==30:
         count=0
-        x=train_model()
+        x=var.train_model()
         return x
     # Return a response
     return 'Image received'
