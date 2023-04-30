@@ -25,9 +25,9 @@ def receive_image():
     if count==30:
         count=0
         x=var.train_model()
-        return x
+        return 'detected : {}'.format(x)
     # Return a response
-    return 'Image received'
+    return '{} recieved'.format(count)
 
 if __name__ == '__main__':
     app.run()
