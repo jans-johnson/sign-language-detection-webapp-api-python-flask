@@ -1,4 +1,4 @@
-from flask import Flask, request
+from flask import Flask, request,jsonify
 from flask_cors import CORS
 from train import training
 import base64
@@ -24,12 +24,27 @@ def receive_image():
     with open('frames/'+str(count)+'.jpg', 'wb') as f:
         f.write(image_bytes)
     count=count+1
+
+    # Return a response
+    nparr = np.frombuffer(image_bytes, np.uint8)
+
+    # Decode the numpy array into an image
+    img = cv2.imdecode(nparr, cv2.IMREAD_COLOR)
+
     if count==30:
         count=0
         x=var.train_model()
-        return 'detected : {}'.format(x)
-    # Return a response
-    return '{} recieved'.format(count)
+        data = {
+            'image': base64.b64encode(var.detect(img=img)).decode('utf-8'),
+            'message': 'detected : {}'.format(x)
+        }
+    else:
+        data = {
+            'image': base64.b64encode(var.detect(img=img)).decode('utf-8'),
+            'message': '{} recieved'.format(count)
+        }
+    
+    return jsonify(data)
 
 @app.route('/detect', methods=['POST'])
 def detect_image():
